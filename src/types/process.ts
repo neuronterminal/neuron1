@@ -1,6 +1,15 @@
 export interface ProcessingContext {
   message: string;
-  context: any;
-  emotion: any;
-  memories: any[];
+  context?: {
+    currentContext?: string;
+    [key: string]: any;
+  };
+  emotion?: {
+    score: number;
+    [key: string]: any;
+  };
+  memories?: Array<{
+    content: string;
+    [key: string]: any;
+  }>;
 }
