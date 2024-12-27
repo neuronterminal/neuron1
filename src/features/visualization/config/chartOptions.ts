@@ -1,4 +1,6 @@
-export const defaultChartOptions = {
+import { ChartOptions } from 'chart.js';
+
+export const defaultChartOptions: ChartOptions<'line'> = {
   responsive: true,
   maintainAspectRatio: false,
   animation: {
@@ -7,7 +9,7 @@ export const defaultChartOptions = {
   },
   interaction: {
     intersect: false,
-    mode: 'index' as const
+    mode: 'index'
   },
   scales: {
     y: {
@@ -36,19 +38,6 @@ export const defaultChartOptions = {
         font: {
           family: "'Courier New', monospace"
         }
-      }
-    },
-    tooltip: {
-      backgroundColor: 'rgba(13, 2, 8, 0.9)',
-      borderColor: '#00ff41',
-      borderWidth: 1,
-      titleColor: '#00ff41',
-      bodyColor: '#00ff41',
-      titleFont: {
-        family: "'Courier New', monospace"
-      },
-      bodyFont: {
-        family: "'Courier New', monospace"
       }
     }
   }
