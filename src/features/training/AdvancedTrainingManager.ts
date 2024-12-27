@@ -5,10 +5,8 @@ import { createModel } from '../ai/models/modelFactory';
 export class AdvancedTrainingManager {
   private model: tf.LayersModel | null = null;
   private conceptModel: tf.LayersModel | null = null;
-  private isTraining: boolean = false;
 
   async initializeModels() {
-    // Main language model with corrected architecture
     const mainArchitecture: ModelArchitecture = {
       inputShape: [128],
       outputShape: [64],
@@ -19,20 +17,50 @@ export class AdvancedTrainingManager {
       ]
     };
 
-    // Concept understanding model with corrected architecture
-    const conceptArchitecture: ModelArchitecture = {
-      inputShape: [256],
-      outputShape: [128],
-      layers: [
-        { type: 'dense', units: 512, activation: 'relu' },
-        { type: 'dense', units: 256, activation: 'relu' },
-        { type: 'dense', units: 128, activation: 'sigmoid' }
-      ]
-    };
-
     this.model = await createModel(mainArchitecture);
-    this.conceptModel = await createModel(conceptArchitecture);
   }
 
-  // Rest of the class implementation remains the same
+  async loadModels() {
+    try {
+      this.model = await tf.loadLayersModel('localstorage://neural-chat-model');
+      return true;
+    } catch (error) {
+      console.error('Failed to load models:', error);
+      return false;
+    }
+  }
+
+  async saveModels() {
+    if (this.model) {
+      await this.model.save('localstorage://neural-chat-model');
+    }
+  }
+
+  async getModelWeights() {
+    return this.model?.getWeights() || [];
+  }
+
+  async setModelWeights(weights: tf.Tensor[]) {
+    if (this.model) {
+      this.model.setWeights(weights);
+    }
+  }
+
+  async trainOnDialogue(data: any) {
+    if (!this.model) return;
+    return this.model.fit(
+      tf.tensor2d(data.input),
+      tf.tensor2d(data.output),
+      { epochs: 10 }
+    );
+  }
+
+  async trainOnConcepts(data: any) {
+    if (!this.conceptModel) return;
+    return this.conceptModel.fit(
+      tf.tensor2d(data.input),
+      tf.tensor2d(data.output),
+      { epochs: 10 }
+    );
+  }
 }
