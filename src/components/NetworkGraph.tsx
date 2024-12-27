@@ -8,28 +8,32 @@ interface NetworkGraphProps {
 
 export function NetworkGraph({ data }: NetworkGraphProps) {
   const svgRef = useRef<SVGSVGElement>(null);
+  const simulationRef = useRef<d3.Simulation<d3.SimulationNodeDatum, undefined>>();
   const width = 600;
   const height = 400;
 
   useEffect(() => {
     if (!svgRef.current) return;
 
-    const simulation = d3.forceSimulation(data.nodes)
+    // Initialize simulation
+    simulationRef.current = d3.forceSimulation(data.nodes)
       .force('link', d3.forceLink(data.links).id(d => (d as any).id))
       .force('charge', d3.forceManyBody().strength(-200))
       .force('center', d3.forceCenter(width / 2, height / 2));
 
+    // Update function
     const updateGraph = () => {
       if (svgRef.current) {
-        // Force re-render by dispatching custom event
-        svgRef.current.dispatchEvent(new CustomEvent('update'));
+        svgRef.current.dispatchEvent(new Event('update'));
       }
     };
 
-    simulation.on('tick', updateGraph);
+    // Add tick handler
+    simulationRef.current.on('tick', updateGraph);
 
+    // Cleanup
     return () => {
-      simulation.stop();
+      simulationRef.current?.stop();
     };
   }, [data]);
 
