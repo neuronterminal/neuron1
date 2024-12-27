@@ -1,10 +1,10 @@
-import { LayerArgs } from '@tensorflow/tfjs';
+import { GRULayerArgs } from '@tensorflow/tfjs';
 
 export interface LayerConfig {
   type: 'dense' | 'lstm' | 'attention';
   units: number;
   activation?: string;
-  config?: Partial<LayerArgs>;
+  config?: Partial<GRULayerArgs>;
 }
 
 export interface ModelArchitecture {
