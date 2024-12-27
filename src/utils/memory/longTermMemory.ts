@@ -6,7 +6,8 @@ export class LongTermMemory {
   private readonly MAX_MEMORIES = 1000;
 
   async store(content: string, type: MemoryType) {
-    const embedding = await embedText(content);
+    const embeddingTensor = await embedText(content);
+    const embedding = Array.from(await embeddingTensor.data());
     
     const memory: Memory = {
       id: crypto.randomUUID(),
@@ -23,7 +24,8 @@ export class LongTermMemory {
   }
 
   async recall(query: string, limit = 5): Promise<Memory[]> {
-    const queryEmbedding = await embedText(query);
+    const queryTensor = await embedText(query);
+    const queryEmbedding = Array.from(await queryTensor.data());
     
     return this.memories
       .map(memory => ({
@@ -40,7 +42,6 @@ export class LongTermMemory {
   }
 
   private calculateSimilarity(a: number[], b: number[]): number {
-    // Cosine similarity calculation
     const dotProduct = a.reduce((sum, val, i) => sum + val * b[i], 0);
     const magnitudeA = Math.sqrt(a.reduce((sum, val) => sum + val * val, 0));
     const magnitudeB = Math.sqrt(b.reduce((sum, val) => sum + val * val, 0));
@@ -49,7 +50,6 @@ export class LongTermMemory {
 
   private pruneOldMemories() {
     if (this.memories.length > this.MAX_MEMORIES) {
-      // Remove least accessed and oldest memories
       this.memories.sort((a, b) => 
         (b.accessCount - a.accessCount) || 
         (a.timestamp.getTime() - b.timestamp.getTime())
