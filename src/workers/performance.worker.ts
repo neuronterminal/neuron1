@@ -1,13 +1,15 @@
 /// <reference lib="webworker" />
 
-const METRICS_INTERVAL = 1000; // 1 second
+declare const self: Worker;
+
+const METRICS_INTERVAL = 1000;
 
 let isRunning = false;
 
 function getPerformanceMetrics() {
   return {
     memory: (performance as any).memory?.usedJSHeapSize || 0,
-    cpu: Math.random() * 100, // Simulated CPU usage
+    cpu: Math.random() * 100,
     fps: calculateFPS(),
     timestamp: Date.now()
   };
