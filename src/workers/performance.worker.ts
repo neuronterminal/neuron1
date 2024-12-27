@@ -1,4 +1,4 @@
-declare const self: Worker;
+/// <reference lib="webworker" />
 
 const METRICS_INTERVAL = 1000; // 1 second
 
@@ -14,7 +14,6 @@ function getPerformanceMetrics() {
 }
 
 function calculateFPS() {
-  // Simplified FPS calculation
   return Math.floor(60 - Math.random() * 10);
 }
 
