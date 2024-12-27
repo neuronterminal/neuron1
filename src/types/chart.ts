@@ -1,15 +1,15 @@
 import { ChartOptions } from 'chart.js';
 
-export const defaultChartOptions: ChartOptions<'line'> = {
+export const chartOptions: ChartOptions<'line'> = {
   responsive: true,
   maintainAspectRatio: false,
   animation: {
     duration: 750,
-    easing: 'easeInOutQuart'
+    easing: 'easeInOutQuart' as const
   },
   interaction: {
     intersect: false,
-    mode: 'index'
+    mode: 'index' as const
   },
   scales: {
     y: {
