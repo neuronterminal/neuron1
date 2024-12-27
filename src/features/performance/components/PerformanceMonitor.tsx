@@ -1,7 +1,7 @@
 import React from 'react';
 import { Line } from 'react-chartjs-2';
 import { motion } from 'framer-motion';
-import { defaultChartOptions } from '../utils/chartConfig';
+import { defaultChartOptions } from '../../../types/chart';
 
 interface PerformanceData {
   timestamp: number;
