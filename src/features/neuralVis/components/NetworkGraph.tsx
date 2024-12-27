@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { NetworkData } from '../types';
 import { useNetworkSimulation } from '../hooks/useNetworkSimulation';
 import { NetworkLinks } from './NetworkLinks';
@@ -29,10 +29,19 @@ export function NetworkGraph({
   useEffect(() => {
     if (!simulation) return;
 
-    simulation.on('tick', () => {
-      // Force re-render on simulation tick
-      svgRef.current?.forceUpdate?.();
-    });
+    const updateGraph = () => {
+      if (svgRef.current) {
+        // Force re-render
+        const event = new Event('update');
+        svgRef.current.dispatchEvent(event);
+      }
+    };
+
+    simulation.on('tick', updateGraph);
+
+    return () => {
+      simulation.on('tick', null);
+    };
   }, [simulation]);
 
   return (
