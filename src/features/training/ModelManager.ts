@@ -6,12 +6,9 @@ export class ModelManager {
   
   async initialize(architecture: ModelArchitecture): Promise<void> {
     try {
-      // Try to load existing model first
       this.model = await this.loadModel();
     } catch (error) {
-      // Create new model if none exists
       this.model = await this.createModel(architecture);
-      // Save initial model
       await this.saveModel();
     }
   }
@@ -20,7 +17,7 @@ export class ModelManager {
     const model = tf.sequential();
     
     architecture.layers.forEach((layer, index) => {
-      const config: tf.LayerArgs = {
+      const config: tf.layers.LayerArgs = {
         units: layer.units,
         activation: layer.activation,
         inputShape: index === 0 ? architecture.inputShape : undefined
