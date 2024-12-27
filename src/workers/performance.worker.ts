@@ -1,10 +1,12 @@
+declare const self: Worker;
+
 const METRICS_INTERVAL = 1000; // 1 second
 
 let isRunning = false;
 
 function getPerformanceMetrics() {
   return {
-    memory: performance.memory?.usedJSHeapSize || 0,
+    memory: (performance as any).memory?.usedJSHeapSize || 0,
     cpu: Math.random() * 100, // Simulated CPU usage
     fps: calculateFPS(),
     timestamp: Date.now()
