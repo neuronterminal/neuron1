@@ -1,8 +1,7 @@
-import { Message } from '../../types/chat';
-import { DataPreprocessor } from './DataPreprocessor';
-import { ModelManager } from './ModelManager';
+import * as tf from '@tensorflow/tfjs';
+import { ModelArchitecture } from '../ai/models/types';
 
-const DEFAULT_ARCHITECTURE = {
+const DEFAULT_ARCHITECTURE: ModelArchitecture = {
   inputShape: [128],
   outputShape: [64],
   layers: [
@@ -13,70 +12,28 @@ const DEFAULT_ARCHITECTURE = {
 };
 
 export class TrainingService {
-  private preprocessor: DataPreprocessor;
-  private modelManager: ModelManager;
-  private initialized: boolean = false;
+  private model: tf.LayersModel | null = null;
 
-  constructor() {
-    this.preprocessor = new DataPreprocessor();
-    this.modelManager = new ModelManager();
-    this.initialize();
-  }
-
-  private async initialize() {
+  async initialize() {
     try {
-      await this.modelManager.initialize(DEFAULT_ARCHITECTURE);
-      this.initialized = true;
-      console.log('Training service initialized successfully');
+      this.model = await tf.loadLayersModel('localstorage://neural-chat-model');
+      console.log('Model loaded successfully');
     } catch (error) {
-      console.error('Failed to initialize training service:', error);
+      console.error('Failed to load model:', error);
     }
   }
 
-  async trainOnMessages(messages: Message[]) {
-    if (!this.initialized || messages.length < 2) return;
+  async train(data: { input: number[][], output: number[][] }) {
+    if (!this.model) return;
 
-    try {
-      const trainingData = this.preprocessor.processMessages(messages);
-      const model = this.modelManager.getModel();
-      
-      await model.fit(
-        tf.tensor2d(trainingData.input),
-        tf.tensor2d(trainingData.output),
-        {
-          epochs: 50,
-          batchSize: 32,
-          validationSplit: 0.2
-        }
-      );
-    } catch (error) {
-      console.error('Error training on messages:', error);
-    }
-  }
-
-  async generateResponse(context: string): Promise<string | null> {
-    if (!this.initialized) {
-      console.warn('Training service not initialized');
-      return null;
-    }
-
-    try {
-      const tokens = this.preprocessor.processMessages([{ 
-        id: '0',
-        role: 'user',
-        content: context,
-        timestamp: new Date()
-      }]);
-
-      const model = this.modelManager.getModel();
-      const prediction = await model.predict(tf.tensor2d([tokens.input[0]])) as tf.Tensor;
-      
-      // For now, return null to fall back to rule-based responses
-      // until the model is better trained
-      return null;
-    } catch (error) {
-      console.error('Error generating response:', error);
-      return null;
-    }
+    return this.model.fit(
+      tf.tensor2d(data.input),
+      tf.tensor2d(data.output),
+      {
+        epochs: 50,
+        batchSize: 32,
+        validationSplit: 0.2
+      }
+    );
   }
 }
