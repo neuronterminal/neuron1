@@ -1,14 +1,14 @@
-import { GRULayerArgs } from '@tensorflow/tfjs';
+import { layers } from '@tensorflow/tfjs';
 
 export interface LayerConfig {
   type: 'dense' | 'lstm' | 'attention';
   units: number;
   activation?: string;
-  config?: Partial<GRULayerArgs>;
+  config?: Partial<layers.LayerArgs>;
 }
 
 export interface ModelArchitecture {
-  layers: LayerConfig[];
   inputShape: number[];
   outputShape: number[];
+  layers: LayerConfig[];
 }
