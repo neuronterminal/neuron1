@@ -1,9 +1,16 @@
 import { useState, useCallback } from 'react';
 import { LLMManager } from '../utils/llm/llmManager';
-import { LLMProvider } from '../utils/llm/types';
+import { LLMProvider, LLMConfig } from '../types/llm';
+
+const defaultConfig: LLMConfig = {
+  provider: 'local',
+  apiKey: '',
+  model: 'default',
+  maxTokens: 1024
+};
 
 export function useLLM() {
-  const [llmManager] = useState(() => new LLMManager());
+  const [llmManager] = useState(() => new LLMManager(defaultConfig));
   const [currentProvider, setCurrentProvider] = useState<string>('local');
   const [isProcessing, setIsProcessing] = useState(false);
 
