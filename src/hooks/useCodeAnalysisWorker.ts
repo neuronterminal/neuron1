@@ -1,28 +1,15 @@
-import { useAtom } from 'jotai';
-import { codeAnalysisAtom, isAnalyzingAtom } from '../state/atoms/codeState';
-import { useWorker } from './useWorker';
+import { useState } from 'react';
+import { CodeAnalysis } from '../features/codeAnalysis/types';
 
 export function useCodeAnalysisWorker() {
-  const [, setAnalysis] = useAtom(codeAnalysisAtom);
-  const [, setIsAnalyzing] = useAtom(isAnalyzingAtom);
-
-  const { postMessage } = useWorker('/src/workers/codeAnalysis.worker.ts', {
-    onMessage: (message) => {
-      if (message.type === 'analysis_complete') {
-        setAnalysis(message.data);
-        setIsAnalyzing(false);
-      }
-    },
-    onError: (error) => {
-      console.error('Code analysis worker error:', error);
-      setIsAnalyzing(false);
-    }
-  });
+  const [analysis, setAnalysis] = useState<CodeAnalysis | null>(null);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
 
   const analyzeCode = (code: string) => {
     setIsAnalyzing(true);
-    postMessage({ code });
+    // Analysis logic here
+    setIsAnalyzing(false);
   };
 
-  return { analyzeCode };
+  return { analyzeCode, analysis, isAnalyzing };
 }
