@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { ProcessingContext } from '../types/agent';
+import { ProcessingContext } from '../types/process';
 import { analyzeIntent } from '../utils/nlp/intentAnalysis';
 import { generateContextualPrompt } from '../utils/prompts/contextual';
 import { useLLM } from './useLLM';
@@ -16,15 +16,9 @@ export function useAgent() {
     setIsThinking(true);
     try {
       const intent = await analyzeIntent(context.message);
-      const prompt = generateContextualPrompt({
-        message: context.message,
-        intent,
-        context: context.context,
-        emotion: context.emotion,
-        memories: context.memories
-      });
-
+      const prompt = generateContextualPrompt(context);
       const response = await generateResponse(prompt);
+      
       if (!response?.content) {
         throw new Error('Invalid response from LLM');
       }
@@ -32,7 +26,7 @@ export function useAgent() {
       return response.content;
     } catch (error) {
       console.error('Error in agent processing:', error);
-      throw error; // Re-throw to be handled by the chat hook
+      throw error;
     } finally {
       setIsThinking(false);
     }
