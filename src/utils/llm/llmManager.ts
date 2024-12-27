@@ -1,4 +1,4 @@
-import { LLMConfig, LLMProvider, LLMResponse } from './types';
+import { LLMConfig, LLMProvider, LLMResponse } from '../../types/llm';
 import { generateLocalResponse } from './providers/local';
 import { generateTransformersResponse } from './providers/transformers';
 
@@ -6,14 +6,14 @@ const providers: LLMProvider[] = [
   {
     id: 'local',
     name: 'Local Model',
-    description: 'Basic pattern-based responses using ELIZA-style processing',
+    description: 'Basic pattern-based responses',
     maxTokens: 100,
     isAvailable: true
   },
   {
     id: 'transformers',
     name: 'TensorFlow.js',
-    description: 'Neural network-based responses using TensorFlow.js',
+    description: 'Neural network-based responses',
     maxTokens: 200,
     isAvailable: true
   }
@@ -22,7 +22,7 @@ const providers: LLMProvider[] = [
 export class LLMManager {
   private config: LLMConfig;
 
-  constructor(config: LLMConfig = { provider: 'local' }) {
+  constructor(config: LLMConfig) {
     this.config = config;
   }
 
